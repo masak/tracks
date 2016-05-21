@@ -108,6 +108,11 @@ sub curved-right($x, $y, $angle = 0) {
 constant BRIDGE_LIFT = 20;
 constant CTR_POINT1 = [-20, 5];
 constant CTR_POINT2 = [30, -10];
+constant CTR_POINT3 = [0, -10];
+constant T1 = 0.85;
+constant T2 = 0.8;
+constant T3 = 0.7;
+constant T4 = 0.55;
 
 sub infix:<xy+>($coords, [$dx, $dy]) {
     $coords ~~ /(.*)\,(.*)/
@@ -148,8 +153,15 @@ sub bridge1($x, $y, $angle = 67.5) {
                      {rot(7, 2.7, $angle) xy+ CTR_POINT2}
                      {rot 7, 2.7, $angle}
                  L {rot 10, 2.7, $angle}
-                   {rot 10, -96.3, $angle}
-                   {rot(10, -96.3, $angle) y- BRIDGE_LIFT}
+                   {rot 10, 2.7 * (1 - T4) + -96.3 * T4, $angle}
+                 C {rot(10, 2.7 * (1 - T4) + -96.3 * T4, $angle) xy+ CTR_POINT3}
+                     {rot(10, 2.7 * (1 - T3) + -96.3 * T3, $angle) xy+ CTR_POINT3}
+                     {rot 10, 2.7 * (1 - T3) + -96.3 * T3, $angle}
+                 L {rot 10, 2.7 * (1 - T1) + -96.3 * T1, $angle}
+                 C {rot(10, 2.7 * (1 - T1) + -96.3 * T1, $angle) xy+ CTR_POINT3}
+                     {rot(10, -96.3, $angle) y- BRIDGE_LIFT * T2 xy+ CTR_POINT1}
+                     {rot(10, -96.3, $angle) y- BRIDGE_LIFT * T2}
+                 L {rot(10, -96.3, $angle) y- BRIDGE_LIFT}
                  Z" />
       </g>
     PIECE
@@ -182,8 +194,15 @@ sub bridge2($x, $y, $angle = 67.5) {
                      {rot(7, 2.7, $angle) y- BRIDGE_LIFT xy- CTR_POINT1}
                      {rot(7, 2.7, $angle) y- BRIDGE_LIFT}
                  L {rot(10, 2.7, $angle) y- BRIDGE_LIFT}
-                   {rot 10, 2.7, $angle}
-                   {rot 10, -96.3, $angle}
+                   {rot(10, 2.7, $angle) y- BRIDGE_LIFT * T2}
+                 C {rot(10, 2.7, $angle) y- BRIDGE_LIFT * T2 xy- CTR_POINT1}
+                     {rot(10, 2.7 * T1 + -96.3 * (1 - T1), $angle) xy+ CTR_POINT3}
+                     {rot 10, 2.7 * T1 + -96.3 * (1 - T1), $angle}
+                 L {rot 10, 2.7 * T3 + -96.3 * (1 - T3), $angle}
+                 C {rot(10, 2.7 * T3 + -96.3 * (1 - T3), $angle) xy+ CTR_POINT3}
+                     {rot(10, 2.7 * T4 + -96.3 * (1 - T4), $angle) xy+ CTR_POINT3}
+                     {rot 10, 2.7 * T4 + -96.3 * (1 - T4), $angle}
+                 L {rot 10, -96.3, $angle}
                  Z" />
       </g>
     PIECE
