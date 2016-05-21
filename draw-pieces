@@ -208,6 +208,21 @@ sub bridge2($x, $y, $angle = 67.5) {
     PIECE
 }
 
+sub straight-clipped($x, $y, $angle = 0) {
+    qq:to 'PIECE';
+      <g transform="translate({$x}, {$y}) rotate({$angle}) translate(-10,-97.3)">
+        <rect width="3" height="99" x="0" y="1" />
+        <path d="{straight-middle-piece}" />
+        <rect width="3" height="99" x="17" y="1" />
+        <path d="M -2.5,72
+                 C 0,70 20,69 22.5,71
+                 L 20.1,97
+                 C 20,97 4,94 -0.1,98
+                 Z" style="fill: white" />
+      </g>
+    PIECE
+}
+
 my $distance = 100 * sqrt(2 - sqrt(2));
 my ($x, $y, $angle) = 0, 0, -22.5;
 
@@ -244,7 +259,7 @@ sub add-piece(&piece) {
 }
 
 add-piece($_) for flat
-    &straight,
+    &straight-clipped,
     &curved-left xx 6,
     &bridge1,
     &bridge2,
