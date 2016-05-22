@@ -1,0 +1,75 @@
+use 5.018;
+use strict;
+use warnings;
+
+my $SIDE_OCTAGON = sqrt(2 - sqrt(2));
+my $PI = atan2(1, 1) * 4;
+
+sub is_cycle {
+    my ($track) = @_;
+    my ($x, $y, $angle) = (0, 0, 0);
+    while ($track =~ /(.)/g) {
+        if ($1 eq "L") {
+            $angle += $PI/8;
+            $x += $SIDE_OCTAGON * cos($angle);
+            $y += $SIDE_OCTAGON * sin($angle);
+            $angle += $PI/8;
+        }
+        elsif ($1 eq "R") {
+            $angle -= $PI/8;
+            $x += $SIDE_OCTAGON * cos($angle);
+            $y += $SIDE_OCTAGON * sin($angle);
+            $angle -= $PI/8;
+        }
+        else {   # the "B" and "S" cases
+            $x += cos($angle);
+            $y += sin($angle);
+        }
+    }
+    return abs($x) < 1e-3 && abs($y) < 1e-3 && abs($angle) % (2 * $PI) < 1e-3;
+}
+
+sub mirror { my ($s) = @_; $s =~ tr/LR/RL/; $s }
+sub backwards { my ($s) = @_; "BB" . scalar reverse(mirror(substr($s, 2))) }
+sub mirror_backwards { my ($s) = @_; "BB" . reverse(substr($s, 2)) }
+
+sub seen {
+    my ($track) = @_;
+
+    state %seen;
+    my $representative = $track;
+    if ($representative gt mirror($track)) {
+        $representative = mirror($track);
+    }
+    if ($representative gt backwards($track)) {
+        $representative = backwards($track);
+    }
+    if ($representative gt mirror_backwards($track)) {
+        $representative = mirror_backwards($track);
+    }
+    return $seen{$representative}++;
+}
+
+my @results;
+
+sub helper {
+    my ($track) = @_;
+    if (length($track) == 16) {
+        if (is_cycle($track) && !seen($track)) {
+            push @results, $track;
+        }
+    }
+    else {
+        for my $piece (qw<L R S>) {
+            next if $piece eq "S" && ($track =~ tr/S/S/) >= 2;
+            helper($track . $piece);
+        }
+    }
+}
+
+sub search {
+    helper("BB");
+    return @results;
+}
+
+say for search();
