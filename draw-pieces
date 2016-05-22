@@ -217,14 +217,14 @@ sub straight-clipped($x, $y, $angle = 0) {
         <path d="M -2.5,72
                  C 0,70 20,69 22.5,71
                  L 20.1,97
-                 C 20,97 4,94 -0.1,98
+                 C 20,97 4,95 -0.1,99
                  Z" style="fill: white" />
       </g>
     PIECE
 }
 
 my $distance = 100 * sqrt(2 - sqrt(2));
-my ($x, $y, $angle) = 0, 0, -22.5;
+my ($x, $y, $angle) = 300, 200, -22.5;
 
 sub advance($d) {
     $x += $d * cos(($angle - 90) / 180 * π);
@@ -274,7 +274,7 @@ print qq:to 'SVG';
        xmlns="http://www.w3.org/2000/svg"
        version="1.1"
        width="600"
-       height="200">
+       height="400">
 
       {$body}
     </svg>
