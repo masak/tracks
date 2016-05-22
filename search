@@ -25,13 +25,12 @@ sub is-cycle($track) {
 
 sub seen($track) {
     sub mirror($track) { $track.trans("LR" => "RL") }
-    sub backwards($track) { "BB" ~ mirror($track.substr(2)).flip }
-    sub mirror-backwards($track) { "BB" ~ $track.substr(2).flip }
+    sub backwards { "BB" ~ mirror($track.substr(2)).flip }
+    sub mirror-backwards { "BB" ~ $track.substr(2).flip }
 
     state %seen;
     my $representative
-        = [min] $track, mirror($track),
-                backwards($track), mirror-backwards($track);
+        = [min] $track, mirror($track), backwards(), mirror-backwards();
     return %seen{$representative}++;
 }
 
