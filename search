@@ -34,26 +34,19 @@ sub seen($track) {
     return %seen{$representative}++;
 }
 
-sub search() {
-    sub helper($track) {
-        if $track.chars == 16 {
-            if is-cycle($track) && !seen($track) {
-                take $track;
-            }
-        }
-        else {
-            for <L R S> -> $piece {
-                next if $piece eq "S" && $track.comb("S") >= 2;
-                helper($track ~ $piece);
-            }
+sub search($track) {
+    if $track.chars == 16 {
+        if is-cycle($track) && !seen($track) {
+            say $track;
         }
     }
-
-    gather {
-        helper("BB");
+    else {
+        search($track ~ "L");
+        search($track ~ "R");
+        if $track.comb("S") < 2 {
+            search($track ~ "S");
+        }
     }
 }
 
-for search() {
-    say $_;
-}
+search("BB");
