@@ -225,14 +225,13 @@ sub straight-clipped($x, $y, $angle = 0) {
 }
 
 my $distance = 100 * sqrt(2 - sqrt(2));
-my ($x, $y, $angle) = 300, 200, -22.5;
+my $body = "";
+my ($x, $y, $angle) = 900, 200, -22.5;
 
 sub advance($d) {
     $x += $d * cos(($angle - 90) / 180 * π);
     $y += $d * sin(($angle - 90) / 180 * π);
 }
-
-my $body = "";
 
 sub add-piece(&piece) {
     $body ~= piece($x, $y, $angle);
@@ -268,14 +267,38 @@ add-piece($_) for flat
     &straight,
 ;
 
+my @solutions = «
+    12LLLLLRSSLLLLLR
+    12LLLLRLSSLLLLRL
+    12LLLLSLRSLLLLLR
+    12LLLLSRLSLLLLRL
+    12LLLLSSLRLLLLLR
+    12LLLLSSRLLLLLRL
+    12LLLLRRLLLLSSLL
+    12LLLRLLRLLLSSLL
+    12LLLRLLSSLLLRLL
+»;
+
+for @solutions.kv -> $i, $solution {
+    ($x, $y, $angle) = 300 + 600 * ($i % 3), 800 + 600 * ($i div 3), 67.5;
+
+    for $solution.comb {
+        when "S" { add-piece(&straight) }
+        when "L" { add-piece(&curved-left) }
+        when "R" { add-piece(&curved-right) }
+        when "1" { add-piece(&bridge1) }
+        when "2" { add-piece(&bridge2) }
+    }
+}
+
 print qq:to 'SVG';
     <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
     <svg
        xmlns="http://www.w3.org/2000/svg"
        version="1.1"
-       width="600"
-       height="400">
+       width="1800"
+       height="2100">
 
       {$body}
     </svg>
