@@ -1,0 +1,8 @@
+#! /usr/local/bin/perl6
+
+for dir("blog-post-images/") {
+    next unless / '.svg' $/;
+    my $png = .subst(/'.svg'$/, '.png');
+    next if $png.IO.e && $png.IO.modified > .IO.modified;
+    qqx[inkscape --export-png={$png} {$_}];
+}
