@@ -1,63 +1,70 @@
 constant SIDE_OCTAGON = sqrt(2 - sqrt(2));
 
-sub wiggle($track) {
-    my ($x, $y, $angle) = 0, 0, 0;
-    for $track.comb {
-        when "L" {
-            $angle += pi/8;
-            $x += SIDE_OCTAGON * cos($angle);
-            $y += SIDE_OCTAGON * sin($angle);
-            $angle += pi/8;
-        }
-        when "R" {
-            $angle -= pi/8;
-            $x += SIDE_OCTAGON * cos($angle);
-            $y += SIDE_OCTAGON * sin($angle);
-            $angle -= pi/8;
-        }
-        default {   # the "B" and "S" cases
-            $x += cos($angle);
-            $y += sin($angle);
-        }
-    }
-    return sqrt($x * $x + $y * $y);
-}
-
-sub is-almost-cycle($track) {
-    my $angle = $track.comb("L") - $track.comb("R");
-    return wiggle($track) < 1 && $angle %% 8;
-}
-
-sub seen($track) {
+sub seen-before($track) {
     sub mirror($track) { $track.trans("LR" => "RL") }
     sub backwards { "BB" ~ mirror($track.substr(2)).flip }
     sub mirror-backwards { "BB" ~ $track.substr(2).flip }
 
     state %seen;
-    my $representative
-        = [min] $track, mirror($track), backwards(), mirror-backwards();
-    return %seen{$representative}++;
+    my $rep = [min] $track, mirror($track), backwards(), mirror-backwards();
+    return %seen{$rep}++;
+}
+
+sub wiggle($x, $y) {
+    sqrt($x * $x + $y * $y);
+}
+
+sub is-circular($x, $y, $direction) {
+    wiggle($x, $y) < 1e-3 && abs($direction) % (2 * pi) < 1e-3;
+}
+
+sub is-roughly-circular($x, $y, $direction) {
+    wiggle($x, $y) < 1e0 && abs($direction) % (2 * pi) < 1e-3;
 }
 
 my @solutions;
 
-sub search($track) {
+sub search($track = "BB", $x = 2, $y = 0, $direction = 0) {
     if $track.chars == 16 {
-        if $track.comb("S") == 2 && is-almost-cycle($track) && !seen($track) {
-            my $wiggle = wiggle($track);
-            push @solutions, { :$track, :$wiggle };
+        if is-circular($x, $y, $direction) && !seen-before($track) {
+            push @solutions, { :$track, :wiggle(0), :$x, :$y };
+        }
+        elsif is-roughly-circular($x, $y, $direction) && !seen-before($track) {
+            my $wiggle = wiggle($x, $y);
+            push @solutions, { :$track, :$wiggle, :$x, :$y };
         }
     }
     else {
-        for <L R S> -> $piece {
-            next if $piece eq "S" && $track.comb("S") >= 2;
-            search($track ~ $piece);
+        search(
+            $track ~ "L",
+            $x + SIDE_OCTAGON * cos($direction + pi/8),
+            $y + SIDE_OCTAGON * sin($direction + pi/8),
+            $direction + pi/4,
+        );
+        search(
+            $track ~ "R",
+            $x + SIDE_OCTAGON * cos($direction - pi/8),
+            $y + SIDE_OCTAGON * sin($direction - pi/8),
+            $direction - pi/4,
+        );
+        if $track.comb.grep("S") < 2 {
+            search(
+                $track ~ "S",
+                $x + cos($direction),
+                $y + sin($direction),
+                $direction,
+            );
         }
     }
 }
 
-search("BB");
+search();
 
-for @solutions.sort(*.<wiggle>) {
-    say "{.<track>} {.<wiggle>}";
+my $prev-wiggle = 0;
+for @solutions.sort(*.<wiggle>) -> (:$track, :$wiggle, :$x, :$y) {
+    if $prev-wiggle + 1e-3 < $wiggle {
+        say "-----";
+        $prev-wiggle = $wiggle;
+    }
+    say "$track: $wiggle ($x, $y)";
 }
