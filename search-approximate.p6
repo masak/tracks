@@ -11,7 +11,7 @@ sub seen-before($track) {
 }
 
 sub wiggle($x, $y) {
-    sqrt($x * $x + $y * $y);
+    sqrt($x * $x + $y * $y).round(1e-4);
 }
 
 sub is-circular($x, $y, $direction) {
@@ -44,11 +44,12 @@ my @solutions;
 sub search($track = "BB", $x = 2, $y = 0, $direction = 0) {
     if $track.chars == 16 {
         if is-circular($x, $y, $direction) && !seen-before($track) {
-            push @solutions, { :$track, :wiggle(0), :$x, :$y };
+            push @solutions, { :$track, :wiggle(0), :coords("(0, 0)") };
         }
         elsif is-roughly-circular($x, $y, $direction) && $track.comb.grep("S") == 2 && !seen-before($track) {
             my $wiggle = wiggle($x, $y);
-            push @solutions, { :$track, :$wiggle, :$x, :$y };
+            my $coords = "({exact $x}, {exact $y})";
+            push @solutions, { :$track, :$wiggle, :$coords };
         }
     }
     else {
@@ -78,12 +79,10 @@ sub search($track = "BB", $x = 2, $y = 0, $direction = 0) {
 search();
 
 my $prev-wiggle = 0;
-for @solutions.sort(*.<wiggle>) -> (:$track, :$wiggle, :$x, :$y) {
+for @solutions.sort(*.<coords>).sort(*.<wiggle>) -> (:$track, :$wiggle, :$coords) {
     if $prev-wiggle + 1e-3 < $wiggle {
         say "-----";
         $prev-wiggle = $wiggle;
     }
-    my $exact-x = exact($x);
-    my $exact-y = exact($y);
-    say "$track: $wiggle ($exact-x, $exact-y)";
+    say "$track: $wiggle $coords";
 }
