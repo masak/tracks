@@ -19,7 +19,7 @@ sub is-circular($x, $y, $direction) {
 }
 
 sub is-roughly-circular($x, $y, $direction) {
-    wiggle($x, $y) < 1e0 && abs($direction) % (2 * pi) < 1e-3;
+    wiggle($x, $y) < 2e0 && abs($direction) % (2 * pi) < 1e-3;
 }
 
 my @solutions;
