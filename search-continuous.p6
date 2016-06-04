@@ -44,16 +44,8 @@ class Track {
         );
     }
 
-    method !within($distance) {
-        sqrt($!x * $!x + $!y * $!y) < $distance;
-    }
-
     method is-cycle {
         return self!within(1e-3) && abs($!angle) % (2 * pi) < 1e-3;
-    }
-
-    method is-almost-cycle {
-        return self!within(0.99) && abs($!angle) % (2 * pi) < 1e-3;
     }
 }
 
@@ -69,9 +61,6 @@ loop {
 
     if $track.is-cycle && !seen($track.name) {
         say $track.name;
-    }
-    elsif $track.is-almost-cycle && !seen($track.name) {
-        say "{$track.name} ({$track.x}, {$track.y})";
     }
 
     @queue.push(
