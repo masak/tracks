@@ -29,7 +29,7 @@ sub search($track = "BB", $x = 2, $y = 0, $direction = 0) {
         if is-circular($x, $y, $direction) && !seen-before($track) {
             push @solutions, { :$track, :wiggle(0), :$x, :$y };
         }
-        elsif is-roughly-circular($x, $y, $direction) && !seen-before($track) {
+        elsif is-roughly-circular($x, $y, $direction) && $track.comb.grep("S") == 2 && !seen-before($track) {
             my $wiggle = wiggle($x, $y);
             push @solutions, { :$track, :$wiggle, :$x, :$y };
         }
