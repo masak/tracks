@@ -19,8 +19,25 @@ sub is-circular($x, $y, $direction) {
 }
 
 sub is-roughly-circular($x, $y, $direction) {
-    wiggle($x, $y) < 2e0 && abs($direction) % (2 * pi) < 1e-3;
+    wiggle($x, $y) < 1.99e0 && abs($direction) % (2 * pi) < 1e-3;
 }
+
+my %exact;
+constant δ = 1 / sqrt(2);
+for -6 .. 6 -> $m {
+    for -6 .. 6 -> $n {
+        %exact{ ($m + $n * δ).round(1e-4) } = do given ($m, $n) {
+            when (0, 0) { "0" }
+            when (*, 0) { "$m" }
+            when (0, 1) { "δ" }
+            when (*, 1) { "$m + δ" }
+            when (0, *) { "{$n}δ" }
+            when (*, *) { $n > 0 ?? "$m + {$n}δ" !! "$m - {abs $n}δ" }
+        };
+    }
+}
+
+sub exact($n) { %exact{ $n.round(1e-4) } // $n.round(1e-4) }
 
 my @solutions;
 
@@ -66,5 +83,7 @@ for @solutions.sort(*.<wiggle>) -> (:$track, :$wiggle, :$x, :$y) {
         say "-----";
         $prev-wiggle = $wiggle;
     }
-    say "$track: $wiggle ($x, $y)";
+    my $exact-x = exact($x);
+    my $exact-y = exact($y);
+    say "$track: $wiggle ($exact-x, $exact-y)";
 }
