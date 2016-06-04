@@ -84,5 +84,11 @@ for @solutions.sort(*.<coords>).sort(*.<wiggle>) -> (:$track, :$wiggle, :$coords
         say "-----";
         $prev-wiggle = $wiggle;
     }
-    say "$track: $wiggle $coords";
+    my $Ls = +$track.comb.grep("L");
+    my $symbol = $Ls == 2 || $Ls == 10
+        ?? "○"
+        !! $Ls == 6
+            ?? "∞"
+            !! die "Unknown track type; neither a loop nor a figure-eight";
+    say "$track ($symbol): $wiggle $coords";
 }
