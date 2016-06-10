@@ -17,7 +17,7 @@ class Track {
     has $!scale;
     has Str $!fill;
 
-    submethod BUILD(:$track, :$!x, :$!y, :$!scale, :$!angle = 67.5, :$!fill = "") {
+    submethod BUILD(:$track, :$!x = 0, :$!y = 0, :$!scale = 1, :$!angle = 67.5, :$!fill = "") {
         $!mx = 0;
         $!my = 0;
 

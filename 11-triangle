@@ -1,0 +1,18 @@
+use Track;
+
+my $body = Track.new(:track<LRRL>, :x(65), :y(133/2 - 15), :scale(0.333), :angle(135 - 22.5), :fill<#C0F>).svg;
+$body ~= q[<g transform="translate(42, 100) scale(0.333)">] ~ Track.new(:track<SS>, :angle(-22.5), :fill<#C0F>).svg ~ q[</g>];
+$body ~= q[<g transform="translate(48, 102) scale(0.333)">] ~ Track.new(:track<12>, :angle(67.5), :fill<#C0F>).svg ~ q[</g>];
+
+print qq:to 'SVG';
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+    <svg
+       xmlns="http://www.w3.org/2000/svg"
+       version="1.1"
+       width="120"
+       height="133">
+
+      {$body}
+    </svg>
+    SVG
