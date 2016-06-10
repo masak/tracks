@@ -15,8 +15,9 @@ class Track {
     has $!x;
     has $!y;
     has $!scale;
+    has Str $!fill;
 
-    submethod BUILD(:$track, :$!x, :$!y, :$!scale, :$!angle = 67.5) {
+    submethod BUILD(:$track, :$!x, :$!y, :$!scale, :$!angle = 67.5, :$!fill = "") {
         $!mx = 0;
         $!my = 0;
 
@@ -31,6 +32,8 @@ class Track {
             when "S" { self!add-piece(&straight) }
             when "L" { self!add-piece(&curved-left) }
             when "R" { self!add-piece(&curved-right) }
+            when "l" { self!add-colored-piece(&curved-left, "#f60") }
+            when "r" { self!add-colored-piece(&curved-right, "#f60") }
             when "1" { self!add-piece(&bridge1) }
             when "2" { self!add-piece(&bridge2) }
         }
@@ -96,10 +99,17 @@ class Track {
         }
     }
 
+    method !add-colored-piece(&piece, $color) {
+        $!body ~= qq[<g style="fill: {$color}">];
+        self!add-piece(&piece);
+        $!body ~= q[</g>];
+    }
+
     method svg {
         qq[<g transform="
             translate({$!x}, {$!y})
             scale({$!scale})
-            translate({-($!min-x + $!max-x)/2}, {-($!min-y + $!max-y)/2})">{$!body}</g>];
+            translate({-($!min-x + $!max-x)/2}, {-($!min-y + $!max-y)/2})"
+            {$!fill ?? qq[style="fill: {$!fill}"] !! ""}>{$!body}</g>];
     }
 }
