@@ -1,0 +1,26 @@
+use Track;
+
+my $body = "";
+
+my @tracks = «
+    12LLLLSSLLLL
+»;
+
+for @tracks.kv -> $i, $track {
+    my ($x, $y) = 100 + 200 * $i, 133/2, 67.5;
+
+    $body ~= Track.new(:$track, :$x, :$y, :scale(0.333)).svg;
+}
+
+print qq:to 'SVG';
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+    <svg
+       xmlns="http://www.w3.org/2000/svg"
+       version="1.1"
+       width="200"
+       height="133">
+
+      {$body}
+    </svg>
+    SVG
