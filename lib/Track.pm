@@ -36,6 +36,11 @@ class Track {
             when "r" { self!add-colored-piece(&curved-right, "#f60") }
             when "1" { self!add-piece(&bridge1) }
             when "2" { self!add-piece(&bridge2) }
+            when "①" { self!add-colored-piece(&bridge1, "#c0f") }
+            when "②" { self!add-colored-piece(&bridge2, "#c0f") }
+            when "Ⓛ" { self!add-colored-piece(&curved-left, "#c0f") }
+            when "Ⓡ" { self!add-colored-piece(&curved-right, "#c0f") }
+            when "Ⓢ" { self!add-colored-piece(&straight, "#c0f") }
         }
     }
 
