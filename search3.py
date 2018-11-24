@@ -1,12 +1,5 @@
 tracks_seen = {}
 
-class Vec4D(tuple):
-    def __new__(cls, x_int, x_q, y_int, y_q):
-        return tuple.__new__(cls, (x_int, x_q, y_int, y_q))
-    def __add__(self, other):
-        return Vec4D(self[0]+other[0], self[1]+other[1], self[2]+other[2], self[3]+other[3])
-
-
 def is_circular(x_int, x_q, y_int, y_q, direction):
     return x_int == x_q == y_int == y_q == 0 and direction == 0
 
